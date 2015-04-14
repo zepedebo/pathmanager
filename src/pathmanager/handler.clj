@@ -1,18 +1,18 @@
 (ns pathmanager.handler
-  (:require [compojure.core :refer [defroutes]]
+  (:require [compojure.core :refer [defroutes routes]]
             [pathmanager.routes.home :refer [home-routes]]
-            [pathmanager.middleware :refer [load-middleware]]
-            [pathmanager.session-manager :as session-manager]
-            [noir.response :refer [redirect]]
-            [noir.util.middleware :refer [app-handler]]
+            [pathmanager.routes.player :refer [player-routes]]
+            [pathmanager.routes.character :refer [character-routes]]
+            [pathmanager.middleware :refer [development-middleware
+                                         production-middleware]]
+            [pathmanager.session :as session]
             [ring.middleware.defaults :refer [site-defaults]]
             [compojure.route :as route]
             [taoensso.timbre :as timbre]
             [taoensso.timbre.appenders.rotor :as rotor]
             [selmer.parser :as parser]
             [environ.core :refer [env]]
-            [cronj.core :as cronj]
-            [pathmanager.db.schema :as schema]))
+            [cronj.core :as cronj]))
 
 (defroutes base-routes
   (route/resources "/")
@@ -37,11 +37,8 @@
     {:path "pathmanager.log" :max-size (* 512 1024) :backlog 10})
 
   (if (env :dev) (parser/cache-off!))
-  
- ; (when-not (schema/initialized?)
- ;   (schema/create-tables))
   ;;start the expired session cleanup job
-  (cronj/start! session-manager/cleanup-job)
+  (cronj/start! session/cleanup-job)
   (timbre/info "\n-=[ pathmanager started successfully"
                (when (env :dev) "using the development profile") "]=-"))
 
@@ -50,30 +47,14 @@
    shuts down, put any clean up code here"
   []
   (timbre/info "pathmanager is shutting down...")
-  (cronj/shutdown! session-manager/cleanup-job)
+  (cronj/shutdown! session/cleanup-job)
   (timbre/info "shutdown complete!"))
 
-;; timeout sessions after 30 minutes
-(def session-defaults
-  {:timeout (* 60 30)
-   :timeout-response (redirect "/")})
-
-(defn- mk-defaults
-       "set to true to enable XSS protection"
-       [xss-protection?]
-       (-> site-defaults
-           (update-in [:session] merge session-defaults)
-           (assoc-in [:security :anti-forgery] xss-protection?)))
-
-(def app (app-handler
-           ;; add your application routes here
-           [home-routes base-routes]
-           ;; add custom middleware here
-           :middleware (load-middleware)
-           :ring-defaults (mk-defaults false)
-           ;; add access rules here
-           :access-rules []
-           ;; serialize/deserialize the following data formats
-           ;; available formats:
-           ;; :json :json-kw :yaml :yaml-kw :edn :yaml-in-html
-           :formats [:json-kw :edn :transit-json]))
+(def app
+  (-> (routes
+        home-routes
+        player-routes
+        character-routes
+        base-routes)
+      development-middleware
+      production-middleware))

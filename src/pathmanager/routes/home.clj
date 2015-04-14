@@ -1,19 +1,20 @@
 (ns pathmanager.routes.home
-  (:require [compojure.core :refer :all]
-            [pathmanager.layout :as layout]
-            [pathmanager.util :as util]
-            [pathmanager.db.core :as db]))
+  (:require [pathmanager.layout :as layout]
+            [compojure.core :refer [defroutes GET POST]]
+            [ring.util.response :refer [redirect]]
+            [pathmanager.db.core :as db]
+            [bouncer.core :as b]
+            [bouncer.validators :as v]))
 
-(defn home-page [& [name message error]]
+(defn home-page [{:keys [flash]}]
   (layout/render
-    "home.html" {:error error
-                 :name name
-                 :message message
-                 :players (db/get-players)}))
+    "home.html"
+    ))
 
 (defn about-page []
   (layout/render "about.html"))
 
 (defroutes home-routes
-  (GET "/" [] (home-page))
+  (GET "/" request (home-page request))
+;  (POST "/" request (save-message! request))
   (GET "/about" [] (about-page)))

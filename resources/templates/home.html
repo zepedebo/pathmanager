@@ -2,17 +2,17 @@
 {% block content %}
   <div class="jumbotron">
     <h1>Welcome to pathmanager</h1>
-   </div>
-  <div class="row-fluid">
-    <div class="span8">
-      <form action="">
-       {% for item in players %}
-          <input type="radio" name="player" value="{{item.name}}">{{item.name}}<br>
-       {% endfor %}
-     </form>
-       {% if error %}
-            <p class="error">{{error}}</p>
-        {% endif %}
-    </div>
   </div>
+
+
+
+
+
+<div class="span12" id="app">
+    <p> Fetching player list </p>
+</div>
+
+
+
+
 {% endblock %}

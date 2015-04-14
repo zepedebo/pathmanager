@@ -1,0 +1,42 @@
+(ns pathmanager.routes.character
+  (use pathmanager.character)
+  (:require [clojure.string :as string]
+            [pathmanager.layout :as layout]
+            [compojure.core :refer [defroutes GET POST]]
+            [ring.util.response :refer [redirect]]
+            [pathmanager.db.core :as db]
+            [bouncer.core :as b]
+            [bouncer.validators :as v]
+            [clojure.data.json :as json]
+            [liberator.core :refer [resource defresource]]))
+
+
+(defn get-race-adjustments [{:keys [params]}]
+  (let [adjustments (pathmanager.character/race-adjustment (params :race))]
+    (str {:body (json/write-str adjustments)})
+  ))
+
+(defresource character-stats [char-id]
+  :available-media-types ["application/json"]
+  :handle-ok (fn [_] (json/write-str (db/get-info-for-character-id {:id char-id}))))
+
+
+(defroutes character-routes
+  (POST "/characters" []
+        (resource :available-media-types ["application/transit+json" "application/json"]
+                  :allowed-methods [:post]
+                  :handle-ok (fn [context] (get context ::instance))
+                  :post! (fn [context]
+                          (let [body (read-string (slurp (get-in context [:request :body])))
+                               newplayer (db/add-character<! body)]
+                            (println (str newplayer))
+                            (assoc context ::instance (string/replace newplayer #"[\(\)]" ""))
+                            )
+                  :respond-with-entity?	true)))
+
+
+
+  (GET "/characters/" []
+       (resource :available-media-types ["application/transit+json" "application/json"]
+                 :allowed-methods [:get]
+                 :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1}))))))

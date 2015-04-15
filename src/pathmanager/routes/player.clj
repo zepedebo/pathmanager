@@ -53,9 +53,15 @@
 
                             (let [body (read-string (slurp (get-in context [:request :body])))
                                   newplayer (db/add-player<! body)]
-                            {::instance  (string/replace newplayer #"[\(\)]" "")}
+                            {::instance  (json/write-str  (read-string (string/replace newplayer #":scope_identity\(\)" "\"id\"")))}
                               ))
                   :respond-with-entity?	true))
+
+  (GET "/players/:id{[0-9]+}" [id]
+       (resource :available-media-types ["application/transit+json" "application/json"]
+                 :allowed-methods [:get]
+                 :handle-ok (fn [context] (json/write-str (db/get-player {:id id})))))
+
 
   (GET "/players/:id{[0-9]+}/characters" [id]
        (resource :available-media-types ["application/transit+json" "application/json"]

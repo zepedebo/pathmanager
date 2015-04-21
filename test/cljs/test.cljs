@@ -1,7 +1,9 @@
-(ns test-cljs.test
-  )
+(ns pathfinder.test
+  (:require [pathfinder.character-test :as char]))
 
-(defn run []
-  (assert (= 4 4))
-  (assert (= 3 6))
-  )
+(def success 0)
+
+(defn ^:export run []
+  (.log js/console "Example test started.")
+  (char/run)
+  success)

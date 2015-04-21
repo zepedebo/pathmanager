@@ -11,6 +11,19 @@
   (:import goog.History
            goog.history.EventType))
 
+(defn attrib-adjustment [attrval]
+  (let [adjattr (if (< attrval 10) (- attrval 1) attrval)]
+    (-> (/ adjattr 2) (- 5) int )))
+
+(defn race-adjustment [race]
+  (case race
+    "dwarf" {:con 2 :wis 2 :cha -2}
+    "elf" {:dex 2 :int 2 :con -2}
+    "gnome" {:con 2 :cha 2 :str -1}
+    "halfling" {:dex 2 :cha 2 :str -2}
+    {}))
+
+
 
 (def character-id (reagent/atom 0))
 (def all-characters (reagent/atom 0))
@@ -25,13 +38,15 @@
               "Abadar" "Irori" "Gozreh" "Pharasma" "Nethys" "Gorum" "Calistria"
               "Asmodeus" "Zon-Kuthon" "Urgathoa" "Norgorber" "Lamashtu" "Rovagug"])
 
+
+
 (defn list-picker [label source form-id]
   [:div.row
    [:div.col-md-2 [:label label]]
-   [:div.col-md-5
+   [:div.col-md-3
     [:select.form-control {:field :list :id form-id}
-               (for [item source]
-                 [:option {:key item} item])]]])
+     (for [item source]
+       [:option {:key item} item])]]])
 
 
 (defn row [label input]
@@ -41,29 +56,21 @@
 
 (defn attrlist []
   (for [attr ["str" "dex" "con" "int" "wis" "cha"]]
-    (row (str (clojure.string/capitalize attr) ":") [:input.form-control {:field :text :id (keyword attr)}])))
-;    [:div.form-group
-;    [:label  {:class "control-label col-sm-2" :for attr} (str (clojure.string/capitalize attr) ":")]
-;     [:div.col-sm-10 [:input.form-control {:field :text :id (keyword attr)}]]]))
+    (conj (row (str (clojure.string/capitalize attr) ":") [:input.form-control {:field :text :id (keyword attr)}] )
+          [:div.col-md-2 [:label {:field :label :id (keyword (str "race-adjustments." attr))}]])))
 
 
 
 (def character-template
   [:div
    (row "Name:" [:input {:field :text :id :name}])
-;   (row "Race:" [:select.form-control {:field :list :id :race}
-;               (for [item races]
-;                 [:option {:key item} item])])
    (list-picker "Race: " races :race)
    (list-picker "Allignment: " allignments :allignment)
    (list-picker "Diety:" dieties :diety)
    (list-picker "Gender:" ["Male" "Female"] :gender)
    (row "Hit points:" [:input {:field :text :id :hit-points}])
 
-;   [:div.form-group [:label {:class "control-label col-sm-2" :for :hit-points} "Hit Points: "] [:div {:class "col-sm-10"}[:input.form-control {:field :text :id :hit-points}]]]
-   (attrlist)
-   [:button {:on-click #(.log js/console (pr-str))}
-        "Create!"]])
+   (attrlist)])
 
 
 (def form-template
@@ -75,13 +82,6 @@
    (row "comments" [:textarea {:field :textarea :id :comments}])])
 
 
-(defn character-form []
-  (let [doc (reagent/atom {:player (session/get :player)})]
-    (fn []
-      [:div
-       [:div.page-header [:h1 "Reagent Form"]]
-       [bind-fields character-template doc]
-       [:label (str @doc)]])))
 
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console
@@ -96,14 +96,35 @@
 (defn new-character-handler []
   [:div "handle new character"])
 
-(defn add-character! [name]
-  (POST "/characters/"
+(defn add-character! [new-char]
+  (POST "/characters"
         {:headers {"Accept" "application/json"}
          :finally show-new-character-list
          :format :edn
          :handler new-character-handler
          :error-handler error-handler
-         :params {:name name}}))
+         :params new-char}))
+
+
+
+(defn character-form []
+  (let [doc (reagent/atom {:player (session/get :player)})]
+    (fn []
+      [:div
+       [:div.page-header [:h1 "Reagent Form"]]
+       [bind-fields
+        character-template
+        doc
+        (fn [id value {:keys [race] :as doc}]
+          (when (some #{:race} id)
+            (let [adjs (race-adjustment (clojure.string/lower-case value))]
+              (assoc-in doc [:race-adjustments] adjs))))]
+       [:label (str @doc)]
+       [:button.btn.btn-default
+         {:on-click
+          #(add-character! @doc)}
+         "save"]])))
+
 
 
 (defn new-character []

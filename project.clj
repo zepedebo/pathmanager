@@ -91,23 +91,23 @@
                         [ring/ring-devel "1.3.2"]
                         [pjstadig/humane-test-output "0.7.0"]
                         [leiningen "2.5.1"]
-;                        [figwheel "0.2.5"]
+                        [figwheel "0.2.5"]
                         [weasel "0.6.0"]
                         [com.cemerick/piggieback "0.1.6-SNAPSHOT"]]
          :source-paths ["env/dev/clj"]
          :test-paths ["test/clj" "test/cljs"]
          :resources-paths ["dev-resources"]
 
-;         :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
+         :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
 
          :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]}}}
 
 
-;         :figwheel
-;         {:http-server-root "public"
-;          :server-port 3449
-;          :css-dirs ["resources/public/css"]
-;          :ring-handler pathmanager.handler/app}
+         :figwheel
+         {:http-server-root "public"
+          :server-port 3449
+          :css-dirs ["resources/public/css"]
+          :ring-handler pathmanager.handler/app}
 
 
          :repl-options {:init-ns pathmanager.repl}

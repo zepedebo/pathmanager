@@ -25,6 +25,7 @@
   (POST "/characters" []
         (resource :available-media-types ["application/transit+json" "application/json"]
                   :allowed-methods [:post]
+                  :handle-created (fn [context] (println (str "created called" (get context ::instance))) (::instance context))
                   :handle-ok (fn [context] (get context ::instance))
                   :post! (fn [context]
                           (let [body (read-string (slurp (get-in context [:request :body])))
@@ -36,7 +37,7 @@
 
 
 
-  (GET "/characters/" []
+  (GET "/characters" []
        (resource :available-media-types ["application/transit+json" "application/json"]
                  :allowed-methods [:get]
                  :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1}))))))

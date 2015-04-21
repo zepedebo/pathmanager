@@ -16,9 +16,9 @@
   (f)
   )
 
-(deftest test-app
-  (testing "Get player list"
-    (db/add-player<! {:name "Steve"})
-    (let [response (app (request :get "/players"))]
-      (is (= 200 (:status response)))
-      (is (= "Steve" response)))))
+;(deftest test-app
+;  (testing "Get player list"
+;    (db/add-player<! {:name "Steve"})
+;    (let [response (app (request :get "/players"))]
+;      (is (= 200 (:status response)))
+;      (is (= "Steve" response)))))

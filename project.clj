@@ -36,6 +36,7 @@
   :uberjar-name "pathmanager.jar"
   :repl-options {:init-ns pathmanager.handler :nrepl-middleware [lighttable.nrepl.handler/lighttable-ops]}
   :jvm-opts ["-server"]
+  :source-paths ["src/clj" "src/cljs"]
 
   :main pathmanager.core
 
@@ -43,7 +44,7 @@
             [lein-environ "1.0.0"]
             [lein-ancient "0.6.5"]
             [ragtime/ragtime.lein "0.3.8"]
-            [lein-cljsbuild "1.0.4"]
+            [lein-cljsbuild "1.0.5"]
             [lein-light-nrepl "0.1.0"]]
 
 
@@ -64,7 +65,7 @@
   :cljsbuild
   {:builds
    {:app
-    {:source-paths ["src-cljs"]
+    {:source-paths ["src/cljs"]
      :compiler
      {:output-dir "resources/public/js/out"
       :externs ["react/externs/react.js"]
@@ -90,21 +91,23 @@
                         [ring/ring-devel "1.3.2"]
                         [pjstadig/humane-test-output "0.7.0"]
                         [leiningen "2.5.1"]
-                        [figwheel "0.2.5"]
+;                        [figwheel "0.2.5"]
                         [weasel "0.6.0"]
                         [com.cemerick/piggieback "0.1.6-SNAPSHOT"]]
          :source-paths ["env/dev/clj"]
+         :test-paths ["test/clj" "test/cljs"]
+         :resources-paths ["dev-resources"]
 
-         :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
+;         :plugins [[lein-figwheel "0.2.3-SNAPSHOT"]]
 
          :cljsbuild {:builds {:app {:source-paths ["env/dev/cljs"]}}}
 
 
-         :figwheel
-         {:http-server-root "public"
-          :server-port 3449
-          :css-dirs ["resources/public/css"]
-          :ring-handler pathmanager.handler/app}
+;         :figwheel
+;         {:http-server-root "public"
+;          :server-port 3449
+;          :css-dirs ["resources/public/css"]
+;          :ring-handler pathmanager.handler/app}
 
 
          :repl-options {:init-ns pathmanager.repl}

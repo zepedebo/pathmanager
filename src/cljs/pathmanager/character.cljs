@@ -11,6 +11,7 @@
   (:import goog.History
            goog.history.EventType))
 
+
 (def character-id (reagent/atom 0))
 (def all-characters (reagent/atom 0))
 

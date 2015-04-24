@@ -16,5 +16,6 @@
 
 (defroutes home-routes
   (GET "/" request (home-page request))
+  (GET "/dm" request (home-page request))
 ;  (POST "/" request (save-message! request))
   (GET "/about" [] (about-page)))

@@ -27,7 +27,8 @@ SELECT * from characters where player = :id
 --name: add-character<!
 -- add a character to the database
 
-INSERT INTO characters (race, name, allignment, gender, str, dex, con, wis, int, cha, player) values ( :race, :name, :alignment, :gender, :int, :cha, :str, :con, :dex, :wis, 1)
+INSERT INTO characters (race, name, allignment, gender, str, dex, con, wis, int, cha, hitpoints, class, player)
+  values ( :race, :name, :alignment, :gender, :int, :cha, :str, :con, :dex, :wis, :hitpoints, :class, :player)
 
 
 

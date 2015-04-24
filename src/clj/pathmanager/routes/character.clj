@@ -28,12 +28,12 @@
                   :handle-created (fn [context] (println (str "created called" (get context ::instance))) (::instance context))
                   :handle-ok (fn [context] (get context ::instance))
                   :post! (fn [context]
-                          (let [body (read-string (slurp (get-in context [:request :body])))
-                               newplayer (db/add-character<! body)]
-                            (println (str newplayer))
-                            (assoc context ::instance (string/replace newplayer #"[\(\)]" ""))
-                            )
-                  :respond-with-entity?	true)))
+                           (let [body (read-string (slurp (get-in context [:request :body])))
+                                 newcharacter (db/add-character<! body)]
+                             {::instance  (json/write-str  (read-string (string/replace newcharacter #":scope_identity\(\)" "\"id\"")))}
+                             )
+                           )
+                  :respond-with-entity?	true))
 
 
 

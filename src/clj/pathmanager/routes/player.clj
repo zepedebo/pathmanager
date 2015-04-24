@@ -10,37 +10,11 @@
             [liberator.core :refer [resource defresource]]
             [taoensso.timbre :as timbre]))
 
-(defn validate-player [params]
-  (first
-    (b/validate
-      params
-      :name v/required
-      )))
-
-(defn player-page [{:keys [flash params]}]
-  (let [playerinfo (params :id)
-    playerlist {:players (db/get-players)}
-    characters {:characters (db/get-characters-for-player {:id playerinfo})}]
-  (layout/render
-    "player.html"
-    (merge  playerlist {:playerid playerinfo} characters
-          (select-keys flash [:name :errors]))
-   :name (:name flash))))
-
-;(defn add-player! [{:keys [params]}]
-;  (if-let [errors (validate-player params)]
-;    (-> (redirect "/player")
-;        (assoc :flash (assoc params :errors errors)))
-;    (do
-;      (db/add-player!  params )
-;      (redirect "/"))))
 
 (defn string-keys-to-keywords [post-info]
   (into {}
         (for [[k v] post-info]
           [(keyword k) v])))
-
-
 
 
 

@@ -54,10 +54,9 @@
   (session/put! :player id)
   (session/put! :page character/character-form))
 
+(defroute character-list "/character-list" []
+  (session/put! :page character/character-list))
 
-(defroute wut-path "/wut" []
-  (.log js/console "I said wut")
-  (session/put! :page  wut))
 
 (defn mount-components []
   (reagent/render-component [page] (.getElementById js/document "app")))

@@ -52,10 +52,10 @@
 
 (def app
   (-> (routes
-        home-routes
-        player-routes
-        character-routes
-        base-routes)
+       home-routes
+       player-routes
+       character-routes
+       base-routes)
       development-middleware
       production-middleware))
 

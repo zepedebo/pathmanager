@@ -19,7 +19,7 @@
 (comment (defn home-page []
 
   (cond
-   (= @player/player-id 0) [player/player-list]
+   (= @player/player-id 0) [player/get-player-list]
    (= @character/character-id 0) [character/get-character-list @player/player-id]
    :else
    (character/character-sheet @player/player-id @character/character-id)

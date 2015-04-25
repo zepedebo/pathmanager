@@ -14,7 +14,7 @@
 (defn get-race-adjustments [{:keys [params]}]
   (let [adjustments (pathmanager.character/race-adjustment (params :race))]
     (str {:body (json/write-str adjustments)})
-  ))
+    ))
 
 (defresource character-stats [char-id]
   :available-media-types ["application/json"]
@@ -41,6 +41,12 @@
        (resource :available-media-types ["application/transit+json" "application/json"]
                  :allowed-methods [:get]
                  :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1})))))
+
+  (GET "/characters/active" []
+       (resource :available-media-types ["application/transit+json" "application/json"]
+                 :allowed-methods [:get]
+                 :handle-ok (fn [context] (json/write-str (db/get-active-characters)))))
+
 
   (PUT "/characters/:id{[0-9]+}/activate" [id]
        (resource :available-media-types ["application/transit+json" "application/json"]

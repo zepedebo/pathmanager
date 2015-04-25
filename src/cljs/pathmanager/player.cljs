@@ -16,7 +16,7 @@
 
 
 (defn player-item [player]
-  [:div  [:h2 {:class "label label-primary" :on-click #(secretary/dispatch! (str "/player/" (player "id")) )} (player "name")]])
+  [:tr {:on-click #(secretary/dispatch! (str "/player/" (player "id")) )} [:td  (player "name")]])
 
 ;; Restful handler stuff
 (defn error-handler [{:keys [status status-text]}]
@@ -67,8 +67,8 @@
 
 (defn player-list []
   "Render a list of all the current players with the option to create a new one"
-  [:div (for [player @all-players]
-          [player-item player])
+  [:div [:table [:tr [:th "Player Name"]](for [player @all-players]
+          [player-item player])]
    [new-player]])
 
 ;(defn player-list []

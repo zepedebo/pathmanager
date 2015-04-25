@@ -169,7 +169,7 @@
 
 (defn character-list []
   (.log js/console "Rendering character list")
-  [:div [:table  {:style {:border  1}} (for [character @all-characters]
+  [:div [:table  {:style {:border  1}} [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]] (for [character @all-characters]
           [character-item character])]
    [new-character]])
 

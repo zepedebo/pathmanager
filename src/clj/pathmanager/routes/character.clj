@@ -2,7 +2,7 @@
   (use pathmanager.character)
   (:require [clojure.string :as string]
             [pathmanager.layout :as layout]
-            [compojure.core :refer [defroutes GET POST]]
+            [compojure.core :refer [defroutes GET POST PUT]]
             [ring.util.response :refer [redirect]]
             [pathmanager.db.core :as db]
             [bouncer.core :as b]
@@ -40,4 +40,11 @@
   (GET "/characters" []
        (resource :available-media-types ["application/transit+json" "application/json"]
                  :allowed-methods [:get]
-                 :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1}))))))
+                 :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1})))))
+
+  (PUT "/characters/:id{[0-9]+}/activate" [id]
+       (resource :available-media-types ["application/transit+json" "application/json"]
+                 :allowed-methods [:put]
+                 :handle-ok (fn [context] (get context ::instance))
+                 :put! (fn [context]
+                         (db/set-character-active! {:id id})))))

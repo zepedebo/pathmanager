@@ -5,6 +5,7 @@
             [reagent.core :as reagent :refer [atom]]
             [secretary.core :as secretary]
             [goog.events :as events]
+            [goog.history.EventType :as EventType]
             [reagent.session :as session]
             [reagent-forms.core :refer [bind-fields]]
             [ajax.core :refer [GET POST]]
@@ -28,21 +29,17 @@
   (.log js/console "Show the list!")
   (session/put! :page character/get-character-list))
 
-(defn wut []
-  [:div "wut"])
-
-(defn who []
-  [:div [:div "who"]
-   [:button {:type "submit"
-                 :class "btn btn-default"
-                 :on-click #(secretary/dispatch! "/wut")} "back"]])
-
 
 (defn page []
   [:div [(session/get :page)]])
 
 (defroute home-path "/" []
   (session/put! :page player/player-list))
+
+(defroute dm-path "/gm" []
+  (.log js/console (str "GM"))
+  (session/put! :page gm/gm-screen))
+
 
 (defroute player-page "/player/:id" [id]
   (.log js/console (str "Get charcters for " id))
@@ -66,3 +63,6 @@
   (session/put! :page player/player-list)
   (mount-components))
 
+(let [h (History.)]
+  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+  (doto h (.setEnabled true)))

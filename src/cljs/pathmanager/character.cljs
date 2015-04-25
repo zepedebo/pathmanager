@@ -2,7 +2,7 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [reagent.session :as session]
             [reagent-forms.core :refer [bind-fields]]
-            [ajax.core :refer [GET POST]]
+            [ajax.core :refer [GET POST PUT]]
             [pathmanager.player]
             [clojure.string]
             [secretary.core :as secretary]
@@ -137,9 +137,22 @@
                               )}
         "New Charcter"]])))
 
+(defn select-character [char-id]
+  (.log js/console (str "Selected " char-id))
+  (PUT (str "/characters/" char-id "/activate")
+            {:headers {"Accept" "application/json"}
+             :finally show-new-character-list
+             :format :edn
+             :handler new-character-handler
+             :error-handler error-handler
+             :params  {}}))
+
+;(defn character-item [character]
+;  "Display one character"
+;   [:div  [:h2 {:class "label label-primary" :on-click #(reset! character-id (character "id"))} (str (character "name") " : " (character "class"))]])
+
 (defn character-item [character]
-  "Display one character"
-   [:div  [:h2 {:class "label label-primary" :on-click #(reset! character-id (character "id"))} (str (character "name") " : " (character "class"))]])
+  [:tr {:on-click #(select-character (character "id"))} [:td (character "name")][:td (character "class")][:td (character "race")][:td (character "allignment")]])
 
 
 (defn list-handler [response]
@@ -156,8 +169,8 @@
 
 (defn character-list []
   (.log js/console "Rendering character list")
-  [:div (for [character @all-characters]
-          [character-item character])
+  [:div [:table  {:style {:border  1}} (for [character @all-characters]
+          [character-item character])]
    [new-character]])
 
 

@@ -1,6 +1,6 @@
 # pathmanager
 
-FIXME
+Some day this will be a utility for managing Pathfinder gaming sessions. Right now it is an assignment for school.
 
 ## Prerequisites
 
@@ -16,4 +16,4 @@ To start a web server for the application, run:
 
 ## License
 
-Copyright © 2015 FIXME
+Copyright © 2015 Steve Goodrich

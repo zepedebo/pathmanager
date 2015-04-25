@@ -26,11 +26,12 @@
 
 
 (def character-id (reagent/atom 0))
-(def all-characters (reagent/atom {}))
+(def character-info (reagent/atom nil))
+(def all-characters (reagent/atom nil))
 
 (def races ["Dwarf" "Elf" "Gnome" "Half-elf" "Half-orc" "Halfling" "Human"])
 
-(def allignments ["Lawful Good" "Neutral Good" "Chaotic Good"
+(def alignments ["Lawful Good" "Neutral Good" "Chaotic Good"
                   "Lawful Neutral" "Neutral" "Chaotic Neutral"
                   "Lawful Evil" "Neutral Evil" "Chaotic Evil"])
 
@@ -63,7 +64,7 @@
   "Render the main character ability score list"
   (for [attr ["str" "dex" "con" "int" "wis" "cha"]]
     (conj (row (str (clojure.string/capitalize attr) ":") [:input.form-control {:field :numeric :id (keyword attr)}] )
-          [:div.col-md-2 [:label {:field :numeric :id (keyword (str "race-adjustments." attr))}]])))
+          [:div.col-md-2 [:label {:field :label :id (keyword (str "race-adjustments." attr))}]])))
 
 
 
@@ -71,7 +72,7 @@
   [:div
    (row "Name:" [:input {:field :text :id :name}])
    (list-picker "Race: " races :race)
-   (list-picker "Allignment: " allignments :alignment)
+   (list-picker "Alignment: " alignments :alignment)
    (list-picker "Diety:" dieties :diety)
    (list-picker "Gender:" ["Male" "Female"] :gender)
    (list-picker "Class:" classes :class)
@@ -87,7 +88,8 @@
 
 
 (defn show-new-character-list []
-  [:div "New list"])
+  (reset! all-characters nil)
+  (secretary/dispatch! (str "/player/" (session/get :player)) ))
 
 (defn new-character-handler []
   [:div "handle new character"])
@@ -119,7 +121,6 @@
           (when (some #{:race} id)
             (let [adjs (race-adjustment (clojure.string/lower-case value))]
               (assoc-in doc [:race-adjustments] adjs))))]
-       [:label (str @doc)]
        [:button.btn.btn-default
          {:on-click
           #(add-character! @doc)}
@@ -141,18 +142,20 @@
   (.log js/console (str "Selected " char-id))
   (PUT (str "/characters/" char-id "/activate")
             {:headers {"Accept" "application/json"}
-             :finally show-new-character-list
+             :finally #(secretary/dispatch! (str "/characters/" char-id))
              :format :edn
-             :handler new-character-handler
+;             :handler new-character-handler
              :error-handler error-handler
              :params  {}}))
+(defn hello []
+  [:div "Hello from character"])
 
 ;(defn character-item [character]
 ;  "Display one character"
 ;   [:div  [:h2 {:class "label label-primary" :on-click #(reset! character-id (character "id"))} (str (character "name") " : " (character "class"))]])
 
 (defn character-item [character]
-  [:tr {:on-click #(select-character (character "id"))} [:td (character "name")][:td (character "class")][:td (character "race")][:td (character "allignment")]])
+  [:tr {:on-click #(select-character (character "id"))} [:td (character "name")][:td (character "class")][:td (character "race")][:td (character "alignment")]])
 
 
 (defn list-handler [response]
@@ -166,21 +169,59 @@
       (.log js/console (str "loading list"))
       (secretary/dispatch! "/character-list"))))
 
-
-(defn character-list []
-  (.log js/console "Rendering character list")
-  [:div [:table  {:style {:border  1}} [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]] (for [character @all-characters]
-          [character-item character])]
-   [new-character]])
-
-
-
 (defn get-character-list []
   "Send a request to the server to give us the character list for the current player"
   (let [player-id (session/get :player)]
     (.log js/console "Sending request")
     (GET (str "/players/" player-id "/characters") {:handler list-handler :error-handler error-handler})
     [:div (str "Getting full character list for " player-id)]))
+
+
+(defn character-list []
+  (.log js/console "Rendering character list")
+  [:div (if (nil? @all-characters)
+          (get-character-list)
+
+          [:table  {:style {:border  1}}
+           [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]]
+           (for [character @all-characters]
+             [character-item character])])
+          [new-character]])
+
+
+(defn character-handler [response]
+  (reset! character-info response))
+
+(defn cs-line [label value]
+  [:div (str label value)])
+
+(defn character-sheet []
+  (.log js/console (str "Getting character sheet for " (session/get :character)))
+  (if (nil? @character-info)
+    (let [] (GET (str "/characters/" (session/get :character))
+                 {:handler character-handler
+                  :error-handler error-handler})
+      [:div "Fetching character"])
+    [:div (for [character @character-info]
+            [:div
+             (cs-line "Name: " (character "name"))
+             (cs-line "Class: " (character "class"))
+             (cs-line "Race: " (character "race"))
+             (cs-line "Alignment: " (character "alignment"))
+             (cs-line "Diety: " (character "diety"))
+             (cs-line "Gender: " (character "gender"))
+             (cs-line "Class: " (character "class"))
+             (cs-line "Level: " (character "level"))
+             (cs-line "Hit Points: " (character "hitpoints"))
+             (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": " (character attr))))
+             ])]))
+
+
+     ;   (list-picker "Diety:" dieties :diety)
+     ;   (list-picker "Gender:" ["Male" "Female"] :gender)
+     ;   (list-picker "Class:" classes :class)
+     ;   (row "Hit points:" [:input {:field :text :id :hitpoints}])
+   ;  ]))
 
 
 

@@ -3,16 +3,16 @@
             [reagent-forms.core :refer [bind-fields]]
             [ajax.core :refer [GET POST]]))
 
-(def active-characters (reagent/atom {}))
+(def active-characters (reagent/atom nil))
 
 (defn character-item [character]
-  [:tr [:td (character "name")][:td (character "class")][:td (character "race")][:td (character "allignment")]])
+  [:tr [:td (character "name")][:td (character "class")][:td (character "level")][:td (character "race")][:td (character "alignment")]])
 
 
 
-(defn character-list []
+(defn character-list [chars]
   (.log js/console "Rendering character list")
-  [:div [:table  {:style {:border  1}} [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]] (for [character @active-characters]
+  [:div [:table  {:style {:border  1}} [:tr [:th "Name"][:th "Class"][:th "Level"][:th "Race"][:th "Alignment"]] (for [character chars]
           [character-item character])]
    ])
 
@@ -24,5 +24,6 @@
   (reset! active-characters response))
 
 (defn gm-screen []
-  (GET "/characters/active" {:handler list-handler})
-  [:div "The GM Screen"])
+  (if (nil? @active-characters)
+    (let [] (GET "/characters/active" {:handler list-handler}) [:div "Fetching active characters"])
+  [:div (character-list @active-characters)]))

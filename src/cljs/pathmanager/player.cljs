@@ -12,11 +12,11 @@
 
 ;; Global State Values
 (def player-id (reagent/atom 0))
-(def all-players (reagent/atom {}))
+(def all-players (reagent/atom nil))
 
 
-(defn player-item [player]
-  [:tr {:on-click #(secretary/dispatch! (str "/player/" (player "id")) )} [:td  (player "name")]])
+
+
 
 ;; Restful handler stuff
 (defn error-handler [{:keys [status status-text]}]
@@ -37,7 +37,8 @@
 (defn show-new-player-list [response]
   "Show a refreshed player list"
   (.log js/console "Showing new players")
-  (GET "/players" {:handler list-handler :error-handler error-handler}))
+  (GET "/players" {:handler list-handler :error-handler error-handler})
+  [player-list])
 
 
 (defn add-player! [player-name]
@@ -64,17 +65,24 @@
                               (reset! val ""))}
         "Add"]])))
 
+(defn hello []
+  [:div "Hello from player"])
+
+
+(defn player-item [player]
+  [:tr {:on-click #(secretary/dispatch! (str "/player/" (player "id")) )} [:td  (player "name")]])
+
+(defn fetch-players []
+  (.log js/console "Getting player list")
+  (GET "/players" {:handler list-handler :error-handler error-handler})
+  [:div "Getting players"])
 
 (defn player-list []
   "Render a list of all the current players with the option to create a new one"
-  [:div [:table [:tr [:th "Player Name"]](for [player @all-players]
-          [player-item player])]
+  [:div (if (and (nil? @all-players) (= (session/get :page) :player-list))
+    (fetch-players)
+    [:div [:table [:tr [:th "Player Name"]](for [player @all-players]
+          [player-item player])]])
    [new-player]])
-
-;(defn player-list []
-;  [:div { :on-click #(reset! player-id 1)} "The player list"])
-
-; Force a load of the current player list when the application loads
-(GET "/players" {:handler list-handler})
 
 

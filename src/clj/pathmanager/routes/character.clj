@@ -37,10 +37,10 @@
 
 
 
-  (GET "/characters" []
+  (GET "/characters/:id{[0-9]+}" [id]
        (resource :available-media-types ["application/transit+json" "application/json"]
                  :allowed-methods [:get]
-                 :handle-ok (fn [context] (json/write-str (db/get-characters-for-player {:id 1})))))
+                 :handle-ok (fn [context] (json/write-str (db/get-info-for-character-id {:id id})))))
 
   (GET "/characters/active" []
        (resource :available-media-types ["application/transit+json" "application/json"]

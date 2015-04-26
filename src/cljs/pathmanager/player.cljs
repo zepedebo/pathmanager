@@ -38,7 +38,8 @@
   "Show a refreshed player list"
   (.log js/console "Showing new players")
   (GET "/players" {:handler list-handler :error-handler error-handler})
-  [player-list])
+  [:div [player-list]
+    ])
 
 
 (defn add-player! [player-name]
@@ -83,6 +84,6 @@
     (fetch-players)
     [:div [:table [:tr [:th "Player Name"]](for [player @all-players]
           [player-item player])]])
-   [new-player]])
+  [new-player]])
 
 

@@ -106,6 +106,12 @@
            :error-handler error-handler
            :params  (assoc adj-char :player (session/get :player))})))
 
+(defn cancel-button []
+  (let [val (reagent/atom "")]
+    (fn []
+      [:div
+       [:button.btn.btn-default {:on-click #(secretary/dispatch! "/character-list")}
+        "Cancel"]])))
 
 
 (defn character-form []
@@ -124,7 +130,7 @@
        [:button.btn.btn-default
          {:on-click
           #(add-character! @doc)}
-         "save"]])))
+         "save"][cancel-button]])))
 
 
 
@@ -137,6 +143,7 @@
                               (secretary/dispatch! (str "/new-character/" player-id) )
                               )}
         "New Charcter"]])))
+
 
 (defn select-character [char-id]
   (.log js/console (str "Selected " char-id))
@@ -180,13 +187,13 @@
 (defn character-list []
   (.log js/console "Rendering character list")
   [:div (if (nil? @all-characters)
-          (get-character-list)
+          (get-character-list))
 
-          [:table  {:style {:border  1}}
-           [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]]
-           (for [character @all-characters]
-             [character-item character])])
-          [new-character]])
+   [:table  {:style {:border  1}}
+    [:tr [:th "Name"][:th "Class"][:th "Race"][:th "Alignment"]]
+    (for [character @all-characters]
+      [character-item character])]
+   [new-character]])
 
 
 (defn character-handler [response]
@@ -213,7 +220,7 @@
              (cs-line "Class: " (character "class"))
              (cs-line "Level: " (character "level"))
              (cs-line "Hit Points: " (character "hitpoints"))
-             (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": " (character attr))))
+             (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": ") (character attr)))
              ])]))
 
 

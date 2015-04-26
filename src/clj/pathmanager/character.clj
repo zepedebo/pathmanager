@@ -3,7 +3,7 @@
 
 (defn set-active! [playerid characterid]
   (db/clear-active-for-player! playerid)
-  (db/set-character-active! characterid)
+  (db/set-character-active-state! {:id characterid :state true})
   )
 
 (def attrlist (list "str" "con" "dex" "int" "wis" "cha"))

@@ -40,9 +40,9 @@ UPDATE characters SET active=false WHERE player=:playerid
 -- reset damage, spells, and such
 UPDATE characters SET damage = 0 WHERE active = true
 
---name: set-character-active!
--- set the active character
-UPDATE characters SET active=true WHERE id=:id
+--name: set-character-active-state!
+-- Set the characters active state. This determins if they show up in the GMs list.
+UPDATE characters SET active=:state WHERE id=:id
 
 --name: get-active-characters
 SELECT * FROM characters WHERE active = true

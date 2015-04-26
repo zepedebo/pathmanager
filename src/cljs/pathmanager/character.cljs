@@ -106,6 +106,21 @@
            :error-handler error-handler
            :params  (assoc adj-char :player (session/get :player))})))
 
+(defn back-to-list []
+    (PUT (str "/characters/" (session/get :character) "/active/false")
+            {:headers {"Accept" "application/json"}
+             :finally #(secretary/dispatch! "/character-list")
+             :format :edn
+;             :handler new-character-handler
+             :error-handler error-handler
+             :params  {}}))
+
+(defn to-list-button []
+  [:div
+   [:button.btn.btn-default {:on-click #(back-to-list)}
+    "Cancel"]])
+
+
 (defn cancel-button []
   (let [val (reagent/atom "")]
     (fn []
@@ -147,7 +162,8 @@
 
 (defn select-character [char-id]
   (.log js/console (str "Selected " char-id))
-  (PUT (str "/characters/" char-id "/activate")
+  (session/put! :character char-id)
+  (PUT (str "/characters/" char-id "/active/true")
             {:headers {"Accept" "application/json"}
              :finally #(secretary/dispatch! (str "/characters/" char-id))
              :format :edn
@@ -221,7 +237,7 @@
              (cs-line "Level: " (character "level"))
              (cs-line "Hit Points: " (character "hitpoints"))
              (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": ") (character attr)))
-             ])]))
+             ])[to-list-button]]))
 
 
      ;   (list-picker "Diety:" dieties :diety)

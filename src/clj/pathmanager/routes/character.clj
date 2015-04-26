@@ -48,9 +48,10 @@
                  :handle-ok (fn [context] (json/write-str (db/get-active-characters)))))
 
 
-  (PUT "/characters/:id{[0-9]+}/activate" [id]
+  (PUT "/characters/:id{[0-9]+}/active/:state" [id state]
        (resource :available-media-types ["application/transit+json" "application/json"]
                  :allowed-methods [:put]
                  :handle-ok (fn [context] (get context ::instance))
                  :put! (fn [context]
-                         (db/set-character-active! {:id id})))))
+                         (println (str "Setting " id " to " state))
+                         (db/set-character-active-state! {:id id :state state})))))

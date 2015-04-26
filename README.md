@@ -17,9 +17,11 @@ Install Leinengen by running the script or batch file, whichever applies to you.
 ## Compiling
 For this to run, you need to compile both the Closurescript.
 To compile the Clojurescript run
+
     lein cljsbuild once
 
 You also need to create the database tables. To do this type:
+
     lien ragtime migrate
 
 ## Running

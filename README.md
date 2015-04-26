@@ -1,27 +1,35 @@
-# pathmanager
+# {{name}}
 
-Some day this will be a utility for managing Pathfinder gaming sessions. Right now it is an assignment for school.
+Pathmanager
 
 ## Prerequisites
 
+This project requires Java JDK 1.7 or greater.
 You will need [Leiningen][1] 2.0 or above installed.
 
 [1]: https://github.com/technomancy/leiningen
 
-## Running
+You can get the Windows version of the Leinengen installer her:
+    https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein.bat
 
-Before you run the first time, you need to create a database, do this by running
+Install Leinengen by running the script or batch file, whichever applies to you.
+
+## Compiling
+For this to run, you need to compile both the Closurescript.
+To compile the Clojurescript run
+    lein cljsbuild once
+
+You also need to create the database tables. To do this type:
     lien ragtime migrate
 
-To build the Clojurescript run
-    lein cljsbuild once
+## Running
 
 To start a web server for the application, run:
 
     lein ring server
 
-This will also build the Clojure part of the application.
+This compiles the Clojure code and starts a server at http://localhost:3000
 
 ## License
 
-Copyright © 2015 Steve Goodrich
+Copyright © {{year}} Steve Goodrich

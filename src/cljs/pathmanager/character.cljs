@@ -213,7 +213,7 @@
              (cs-line "Class: " (character "class"))
              (cs-line "Level: " (character "level"))
              (cs-line "Hit Points: " (character "hitpoints"))
-             (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": " (character attr))))
+             (for [attr ["str" "dex" "con" "int" "wis" "cha"]] (cs-line (str (clojure.string/capitalize attr) ": ") (character attr)))
              ])]))
 
 

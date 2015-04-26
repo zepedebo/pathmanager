@@ -34,18 +34,30 @@
   (.log js/console (str "Got: " (pr-str response) ))
   (reset! all-players response))
 
-(defn show-new-player-list [response]
-  "Show a refreshed player list"
-  (.log js/console "Showing new players")
-  (GET "/players" {:handler list-handler :error-handler error-handler})
-  [player-list])
+;(defn show-new-player-list [response]
+;  "Show a refreshed player list"
+;  (.log js/console "Showing new players")
+;  (GET "/players" {:handler list-handler :error-handler error-handler})
+;  [player-list])
 
+
+(defn hello []
+  [:div "Hello from player"])
+
+
+(defn player-item [player]
+  [:tr {:on-click #(secretary/dispatch! (str "/player/" (player "id")) )} [:td  (player "name")]])
+
+(defn fetch-players []
+  (.log js/console "Getting player list")
+  (GET "/players" {:handler list-handler :error-handler error-handler})
+  [:div "Getting players"])
 
 (defn add-player! [player-name]
   "Post a new player to the server"
   (POST "/players"
         {:headers {"Accept" "application/json"}
-         :finally show-new-player-list
+         :finally (secretary/dispatch! "/"  )
          :format :edn
          :handler new-player-handler
          :error-handler error-handler
@@ -64,18 +76,6 @@
                               (add-player! @val)
                               (reset! val ""))}
         "Add"]])))
-
-(defn hello []
-  [:div "Hello from player"])
-
-
-(defn player-item [player]
-  [:tr {:on-click #(secretary/dispatch! (str "/player/" (player "id")) )} [:td  (player "name")]])
-
-(defn fetch-players []
-  (.log js/console "Getting player list")
-  (GET "/players" {:handler list-handler :error-handler error-handler})
-  [:div "Getting players"])
 
 (defn player-list []
   "Render a list of all the current players with the option to create a new one"

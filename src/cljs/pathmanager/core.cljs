@@ -51,6 +51,9 @@
    (session/put! :character id)
    (session/put! :page :character-sheet))
 
+ (defroute player-list "/" []
+   (session/put! :page :player-list))
+
 (defn mount-components []
   (reagent/render-component [page] (.getElementById js/document "app")))
 

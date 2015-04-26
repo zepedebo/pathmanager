@@ -10,9 +10,17 @@ You will need [Leiningen][1] 2.0 or above installed.
 
 ## Running
 
+Before you run the first time, you need to create a database, do this by running
+    lien ragtime migrate
+
+To build the Clojurescript run
+    lein cljsbuild once
+
 To start a web server for the application, run:
 
     lein ring server
+
+This will also build the Clojure part of the application.
 
 ## License
 

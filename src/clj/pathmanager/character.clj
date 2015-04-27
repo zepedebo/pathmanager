@@ -8,8 +8,6 @@
 
 (def attrlist (list "str" "con" "dex" "int" "wis" "cha"))
 
-(defn rest-party [id]
-  )
 
 (defn attrib-adjustment [attrval]
   (let [adjattr (if (< attrval 10) (- attrval 1) attrval)]

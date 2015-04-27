@@ -134,7 +134,7 @@
   (let [doc (reagent/atom {:player (session/get :player)})]
     (fn []
       [:div
-       [:div.page-header [:h1 "Reagent Form"]]
+       [:div.page-header [:h1 "New Character"]]
        [bind-fields
         character-template
         doc
